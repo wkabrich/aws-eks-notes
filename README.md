@@ -1,5 +1,9 @@
 # aws-eks-notes
 
+## Private Networked Cluster
+
+The annotation `service.beta.kubernetes.io/aws-load-balancer-internal: "true"` is required for services of type load-balancer. When using the AWS Load Balancer Controller, the `service.beta.kubernetes.io/aws-load-balancer-scheme: "internal"` annotation is [preferred](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/guide/service/annotations/#lb-scheme).
+
 ## AWS Load Balancer Controller
 
 [Resources (v2.4) adapted for terraform](./aws-load-balancer-controller/v2_4_1_full.tf) from the example manifests found in the AWS Load Balancer Controller kuberentes sig's [installation guide](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.4/)
