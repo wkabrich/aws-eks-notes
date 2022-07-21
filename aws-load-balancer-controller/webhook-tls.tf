@@ -47,37 +47,12 @@ resource "tls_locally_signed_cert" "webhook_cert" {
   ]
 }
 
-# the alb controller takes pem format without headers or linebreaks
-# tf produces certs and keys in rfc1421 pem format including headers and linebreaks
+# the kubernetes_secret resource will take a raw pem format and base64 encode it when creating the secret just like kubectl
+# the kuberentes_manifest resource will not, and in that case the locals should be wrapped in tf's base64encode() function
 locals {
-  webhook_ca_crt = replace(
-    replace(
-      tls_self_signed_cert.webhook_ca.cert_pem,
-      "/-----.*-----/",
-      ""
-    ),
-    "/\\s/",
-    ""
-  )
-
-  webhook_tls_crt = replace(
-    replace(
-      tls_locally_signed_cert.webhook_cert.cert_pem,
-      "/-----.*-----/",
-      ""
-    ),
-    "/\\s/",
-    ""
-  )
-  webhook_tls_key = replace(
-    replace(
-      tls_private_key.webhook_cert.private_key_pem,
-      "/-----.*-----/",
-      ""
-    ),
-    "/\\s/",
-    ""
-  )
+  webhook_ca_crt  = tls_self_signed_cert.webhook_ca.cert_pem
+  webhook_tls_crt = tls_locally_signed_cert.webhook_cert.cert_pem
+  webhook_tls_key = tls_private_key.webhook_cert.private_key_pem
 }
 
 resource "kubernetes_secret" "alb_controller_webhook_tls" {
